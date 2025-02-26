@@ -20,7 +20,7 @@
             font-size: 18px;
             font-weight: bold;
         }
-        select, input, button {
+        select, input, button, textarea {
             width: 100%;
             padding: 10px;
             margin-top: 8px;
@@ -29,12 +29,12 @@
             border-radius: 10px;
             border: none;
         }
-        input {
+        input, textarea {
             background-color: #2C3E50;
             color: white;
             outline: none;
-            direction: ltr;
-            text-align: left;
+            direction: rtl;
+            text-align: right;
         }
         button {
             background-color: #FFC107;
@@ -56,12 +56,6 @@
             text-align: right;
             line-height: 1.5;
         }
-        #counter {
-            color:#1E2A38; /* צבע הרקע – הקאונטר יהיה מוסתר */
-            text-align: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -81,8 +75,13 @@
 
     <div id="result"></div>
 
-    <!-- קאונטר מוסתר -->
-    <div id="counter">0</div>
+    <!-- תיבת טקסט "טוט בשאלה" -->
+    <label for="questionTote">טוט בשאלה:</label>
+    <textarea id="questionTote" rows="2" placeholder="הכנס כאן את הטוט בשאלה"></textarea>
+
+    <!-- תיבת טקסט "טוט קיים" -->
+    <label for="existingTote">טוט קיים:</label>
+    <textarea id="existingTote" rows="2" placeholder="הכנס כאן את הטוט הקיים"></textarea>
 
     <script>
         function getLastColumn(aisle, site) {
@@ -139,12 +138,6 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // עדכון קאונטר עם כל כניסה לדף
-            let visitCount = localStorage.getItem("visitCounter") || 0;
-            visitCount++;
-            localStorage.setItem("visitCounter", visitCount);
-            document.getElementById("counter").innerText = visitCount;
-
             document.getElementById("calculate").addEventListener("click", function () {
                 const locationStr = document.getElementById("location").value;
                 const site = document.getElementById("site").value;
