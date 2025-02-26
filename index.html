@@ -62,7 +62,7 @@
     <h2>חישוב מיקום טוט</h2>
 
     <label for="location">הכנס מספר מיקום:</label>
-    <input type="text" id="location" placeholder="לדוגמה: 5:(1,57,0):3" dir="ltr" autofocus>
+    <input type="text" id="location" placeholder="לדוגמה: 7:(1,58,1):0" dir="ltr" autofocus oninput="fixInputOrder()">
 
     <label for="site">בחר אתר:</label>
     <select id="site">
@@ -95,6 +95,18 @@
                 return lastColumnMap[aisle] || 98;
             }
             return null;
+        }
+
+        function fixInputOrder() {
+            let inputField = document.getElementById("location");
+            let value = inputField.value;
+
+            if (value.includes("):") && value.includes("(")) {
+                let parts = value.split(":");
+                if (parts.length === 3) {
+                    inputField.value = `${parts[2]}:${parts[1]}:${parts[0]}`;
+                }
+            }
         }
 
         function parseLocation(locationStr, site) {
