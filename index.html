@@ -56,6 +56,12 @@
             text-align: right;
             line-height: 1.5;
         }
+        #counter {
+            color: #1E2A38; /* צבע הרקע – הקאונטר יהיה מוסתר */
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -74,6 +80,9 @@
     <button id="calculate">חשב מיקום</button>
 
     <div id="result"></div>
+
+    <!-- קאונטר מוסתר -->
+    <div id="counter">0</div>
 
     <script>
         function getLastColumn(aisle, site) {
@@ -100,7 +109,7 @@
                 const cell = parseInt(parts[2]);
 
                 const sideDescFront = side === -1 ? "שמאל" : "ימין";
-                const sideDescBack = side === -1 ? "ימין" : "שמאל"; // צד הפוך כאשר נכנסים מהחלק האחורי
+                const sideDescBack = side === -1 ? "ימין" : "שמאל";
                 const lastColumn = getLastColumn(aisle, site);
 
                 if (lastColumn === null) {
@@ -117,14 +126,10 @@
                     <p>🔴 <strong>קומה:</strong> ${floor}</p>
                     <p>🔴 <strong>תא:</strong> ${cell}</p>
                     <p>🔴 <strong>מספר עמודות לספור בכניסה מהחלק האחורי:</strong> ${columnsFromBack}</p>
-
                     <hr style="border: 1px solid #FFC107;">
-
                     <p>🔴 <strong>הטוט נמצא במעבר ${aisle}, בצד ${sideDescFront} (מקדמת המעבר), בעמודה ${column}, בקומה ${floor}, בתא מספר ${cell}.</strong></p>
                     <p>🔴 אם אתה נכנס מהחלק האחורי, עליך לספור ${columnsFromBack} עמודות קדימה, והטוט יהיה בצד ${sideDescBack}.</p>
-
                     <hr style="border: 1px solid #FFC107;">
-
                     <p style="color: red; font-weight: bold;">🔴 תזכורת: באתר, סופרים מ-0.</p>
                 </div>
                 `;
@@ -134,12 +139,18 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
+            // עדכון קאונטר עם כל כניסה לדף
+            let visitCount = localStorage.getItem("visitCounter") || 0;
+            visitCount++;
+            localStorage.setItem("visitCounter", visitCount);
+            document.getElementById("counter").innerText = visitCount;
+
             document.getElementById("calculate").addEventListener("click", function () {
                 const locationStr = document.getElementById("location").value;
                 const site = document.getElementById("site").value;
 
                 const result = parseLocation(locationStr, site);
-                document.getElementById("result").innerHTML = result; // שימוש ב-innerHTML לתצוגה מעוצבת
+                document.getElementById("result").innerHTML = result;
             });
         });
     </script>
