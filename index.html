@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חישוב מיקום טוט</title>
+    <style>
+        body {
+            background-color: #1E2A38;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: right;
+            padding: 15px;
+            max-width: 350px;
+            margin: auto;
+            border-radius: 12px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            font-size: 14px;
+            text-align: right;
+            border-radius: 10px;
+            border: none;
+        }
+        input {
+            background-color: #2C3E50;
+            color: white;
+            outline: none;
+            direction: ltr;
+            text-align: left;
+        }
+        button {
+            background-color: #FFC107;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #E0A800;
+        }
+        #result {
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #2C3E50;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h2>חישוב מיקום טוט</h2>
+    
+    <label for="location">הכנס מספר מיקום:</label>
+    <input type="text" id="location" placeholder="לדוגמה: 5:(1,57,0):3" dir="ltr" autofocus>
+
+    <label for="site">בחר אתר:</label>
+    <select id="site">
+        <option value="עמק">עמק</option>
+        <option value="חולון">חולון</option>
+        <option value="באר שבע">באר שבע</option>
+    </select>
+
+    <button onclick="calculateLocation()">חשב מיקום</button>
+
+    <div id="result"></div>
+
+    <script>
+        function calculateLocation() {
+            let locationStr = document.getElementById("location").value;
+            let site = document.getElementById("site").value;
+
+            if (!locationStr) {
+                document.getElementById("result").innerText = "יש להזין מספר מיקום.";
+                return;
+            }
+
+            document.getElementById("result").innerText = "התוצאה: " + locationStr + " באתר " + site;
+        }
+    </script>
+</body>
+</html>
