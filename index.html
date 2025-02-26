@@ -33,8 +33,8 @@
             background-color: #2C3E50;
             color: white;
             outline: none;
-            direction: rtl;
-            text-align: right;
+            direction: ltr;
+            text-align: left;
         }
         button {
             background-color: #FFC107;
@@ -62,7 +62,7 @@
     <h2>חישוב מיקום טוט</h2>
 
     <label for="location">הכנס מספר מיקום:</label>
-    <input type="text" id="location" placeholder="לדוגמה: 5:(1,57,0):3" dir="ltr" autofocus>
+    <input type="text" id="location" placeholder="לדוגמה: 7:(-1,29,0):0" dir="ltr" autofocus oninput="fixInputOrder()">
 
     <label for="site">בחר אתר:</label>
     <select id="site">
@@ -95,6 +95,22 @@
                 return lastColumnMap[aisle] || 98;
             }
             return null;
+        }
+
+        function fixInputOrder() {
+            let inputField = document.getElementById("location");
+            let value = inputField.value;
+
+            let regex = /^(\d+):\((-?\d+),(\d+),(\d+)\):(\d+)$/;
+            let reversedRegex = /^(\d+)\):\((-?\d+),(\d+),(\d+)\(:(\d+)$/;
+
+            if (reversedRegex.test(value)) {
+                let match = value.match(reversedRegex);
+                if (match) {
+                    let correctedValue = `${match[5]}:(${match[2]},${match[3]},${match[4]}):${match[1]}`;
+                    inputField.value = correctedValue;
+                }
+            }
         }
 
         function parseLocation(locationStr, site) {
