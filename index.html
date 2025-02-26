@@ -1,60 +1,147 @@
-function getLastColumn(aisle, site) {
-    if (site === "עמק") {
-        const lastColumnMap = {1: 91, 2: 91, 7: 71};
-        return lastColumnMap[aisle] || 74;
-    } else if (site === "חולון") {
-        return 64;
-    } else if (site === "באר שבע") {
-        const lastColumnMap = {1: 99, 2: 99};
-        return lastColumnMap[aisle] || 98;
-    }
-    return null;
-}
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חישוב מיקום טוט</title>
+    <style>
+        body {
+            background-color: #1E2A38;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: right;
+            padding: 15px;
+            max-width: 400px;
+            margin: auto;
+            border-radius: 12px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            font-size: 14px;
+            text-align: right;
+            border-radius: 10px;
+            border: none;
+        }
+        input {
+            background-color: #2C3E50;
+            color: white;
+            outline: none;
+            direction: ltr;
+            text-align: left;
+        }
+        button {
+            background-color: #FFC107;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #E0A800;
+        }
+        #result {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #2C3E50;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: right;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <h2>חישוב מיקום טוט</h2>
 
-function parseLocation(locationStr, site) {
-    try {
-        const parts = locationStr.split(":");
-        const aisle = parseInt(parts[0]);
-        const details = parts[1].replace("(", "").replace(")", "").split(",");
-        const side = parseInt(details[0]);
-        const column = parseInt(details[1]);
-        const floor = parseInt(details[2]);
-        const cell = parseInt(parts[2]);
+    <label for="location">הכנס מספר מיקום:</label>
+    <input type="text" id="location" placeholder="לדוגמה: 5:(1,57,0):3" dir="ltr" autofocus>
 
-        const sideDescFront = side === -1 ? "שמאל" : "ימין";
-        const sideDescBack = side === -1 ? "ימין" : "שמאל"; // היפוך הצד כאשר נכנסים מהחלק האחורי
-        const lastColumn = getLastColumn(aisle, site);
+    <label for="site">בחר אתר:</label>
+    <select id="site">
+        <option value="עמק">עמק</option>
+        <option value="חולון">חולון</option>
+        <option value="באר שבע">באר שבע</option>
+    </select>
 
-        if (lastColumn === null) {
-            return `<span style="color:red;">🔴 שגיאה: האתר לא מוכר!</span>`;
+    <button id="calculate">חשב מיקום</button>
+
+    <div id="result"></div>
+
+    <script>
+        function getLastColumn(aisle, site) {
+            if (site === "עמק") {
+                const lastColumnMap = {1: 91, 2: 91, 7: 71};
+                return lastColumnMap[aisle] || 74;
+            } else if (site === "חולון") {
+                return 64;
+            } else if (site === "באר שבע") {
+                const lastColumnMap = {1: 99, 2: 99};
+                return lastColumnMap[aisle] || 98;
+            }
+            return null;
         }
 
-        const columnsFromBack = lastColumn - column;
+        function parseLocation(locationStr, site) {
+            try {
+                const parts = locationStr.split(":");
+                const aisle = parseInt(parts[0]);
+                const details = parts[1].replace("(", "").replace(")", "").split(",");
+                const side = parseInt(details[0]);
+                const column = parseInt(details[1]);
+                const floor = parseInt(details[2]);
+                const cell = parseInt(parts[2]);
 
-        return `
-        <strong>🔴 מעבר:</strong> ${aisle}<br>
-        <strong>🔴 צד:</strong> ${sideDescFront} (כאשר מסתכלים מקדמת המעבר)<br>
-        <strong>🔴 עמודה:</strong> ${column}<br>
-        <strong>🔴 קומה:</strong> ${floor}<br>
-        <strong>🔴 תא:</strong> ${cell}<br>
-        <strong>🔴 מספר עמודות לספור בכניסה מהחלק האחורי:</strong> ${columnsFromBack}<br><br>
+                const sideDescFront = side === -1 ? "שמאל" : "ימין";
+                const sideDescBack = side === -1 ? "ימין" : "שמאל"; // צד הפוך כאשר נכנסים מהחלק האחורי
+                const lastColumn = getLastColumn(aisle, site);
 
-        <strong>🔴 הטוט נמצא במעבר ${aisle}, בצד ${sideDescFront} (מקדמת המעבר), בעמודה ${column}, בקומה ${floor}, בתא מספר ${cell}.</strong><br>
-        <strong>🔴 אם אתה נכנס מהחלק האחורי, עליך לספור ${columnsFromBack} עמודות קדימה, והטוט יהיה בצד ${sideDescBack}.</strong><br><br>
+                if (lastColumn === null) {
+                    return `<span style="color: red; font-weight: bold;">🔴 שגיאה: האתר לא מוכר!</span>`;
+                }
 
-        <span style="color:red;">🔴 תזכורת: באתר, סופרים מ-0.</span>
-        `;
-    } catch (error) {
-        return `<span style="color:red;">🔴 שגיאה: ודא שהזנת את המיקום בפורמט הנכון!</span>`;
-    }
-}
+                const columnsFromBack = lastColumn - column;
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("calculate").addEventListener("click", function () {
-        const locationStr = document.getElementById("location").value;
-        const site = document.getElementById("site").value;
+                return `
+                <div style="background-color: #2C3E50; padding: 10px; border-radius: 8px; text-align: right; direction: rtl; font-weight: bold; color: white;">
+                    <p>🔴 <strong>מעבר:</strong> ${aisle}</p>
+                    <p>🔴 <strong>צד:</strong> ${sideDescFront} (כאשר מסתכלים מקדמת המעבר)</p>
+                    <p>🔴 <strong>עמודה:</strong> ${column}</p>
+                    <p>🔴 <strong>קומה:</strong> ${floor}</p>
+                    <p>🔴 <strong>תא:</strong> ${cell}</p>
+                    <p>🔴 <strong>מספר עמודות לספור בכניסה מהחלק האחורי:</strong> ${columnsFromBack}</p>
 
-        const result = parseLocation(locationStr, site);
-        document.getElementById("result").innerHTML = result; // שימוש ב-innerHTML במקום innerText
-    });
-});
+                    <hr style="border: 1px solid #FFC107;">
+
+                    <p>🔴 <strong>הטוט נמצא במעבר ${aisle}, בצד ${sideDescFront} (מקדמת המעבר), בעמודה ${column}, בקומה ${floor}, בתא מספר ${cell}.</strong></p>
+                    <p>🔴 אם אתה נכנס מהחלק האחורי, עליך לספור ${columnsFromBack} עמודות קדימה, והטוט יהיה בצד ${sideDescBack}.</p>
+
+                    <hr style="border: 1px solid #FFC107;">
+
+                    <p style="color: red; font-weight: bold;">🔴 תזכורת: באתר, סופרים מ-0.</p>
+                </div>
+                `;
+            } catch (error) {
+                return `<span style="color: red; font-weight: bold;">🔴 שגיאה: ודא שהזנת את המיקום בפורמט הנכון!</span>`;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("calculate").addEventListener("click", function () {
+                const locationStr = document.getElementById("location").value;
+                const site = document.getElementById("site").value;
+
+                const result = parseLocation(locationStr, site);
+                document.getElementById("result").innerHTML = result; // שימוש ב-innerHTML לתצוגה מעוצבת
+            });
+        });
+    </script>
+</body>
+</html>
