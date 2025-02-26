@@ -22,30 +22,30 @@ function parseLocation(locationStr, site) {
         const cell = parseInt(parts[2]);
 
         const sideDescFront = side === -1 ? "שמאל" : "ימין";
-        const sideDescBack = side === -1 ? "ימין" : "שמאל"; // Opposite side when entering from the back
+        const sideDescBack = side === -1 ? "ימין" : "שמאל"; // היפוך הצד כאשר נכנסים מהחלק האחורי
         const lastColumn = getLastColumn(aisle, site);
 
         if (lastColumn === null) {
-            return "🔴 שגיאה: האתר לא מוכר!";
+            return `<span style="color:red;">🔴 שגיאה: האתר לא מוכר!</span>`;
         }
 
         const columnsFromBack = lastColumn - column;
 
         return `
-        🔴 מעבר: ${aisle}<br>
-        🔴 צד: ${sideDescFront} (כאשר מסתכלים מקדמת המעבר)<br>
-        🔴 עמודה: ${column}<br>
-        🔴 קומה: ${floor}<br>
-        🔴 תא: ${cell}<br>
-        🔴 מספר עמודות לספור בכניסה מהחלק האחורי: ${columnsFromBack}<br><br>
+        <strong>🔴 מעבר:</strong> ${aisle}<br>
+        <strong>🔴 צד:</strong> ${sideDescFront} (כאשר מסתכלים מקדמת המעבר)<br>
+        <strong>🔴 עמודה:</strong> ${column}<br>
+        <strong>🔴 קומה:</strong> ${floor}<br>
+        <strong>🔴 תא:</strong> ${cell}<br>
+        <strong>🔴 מספר עמודות לספור בכניסה מהחלק האחורי:</strong> ${columnsFromBack}<br><br>
 
-        🔴 הטוט נמצא במעבר ${aisle}, בצד ${sideDescFront} (מקדמת המעבר), בעמודה ${column}, בקומה ${floor}, בתא מספר ${cell}.<br>
-        🔴 אם אתה נכנס מהחלק האחורי, עליך לספור ${columnsFromBack} עמודות קדימה, והטוט יהיה בצד ${sideDescBack}.<br><br>
+        <strong>🔴 הטוט נמצא במעבר ${aisle}, בצד ${sideDescFront} (מקדמת המעבר), בעמודה ${column}, בקומה ${floor}, בתא מספר ${cell}.</strong><br>
+        <strong>🔴 אם אתה נכנס מהחלק האחורי, עליך לספור ${columnsFromBack} עמודות קדימה, והטוט יהיה בצד ${sideDescBack}.</strong><br><br>
 
-        🔴 תזכורת: באתר, סופרים מ-0.
+        <span style="color:red;">🔴 תזכורת: באתר, סופרים מ-0.</span>
         `;
     } catch (error) {
-        return "🔴 שגיאה: ודא שהזנת את המיקום בפורמט הנכון!";
+        return `<span style="color:red;">🔴 שגיאה: ודא שהזנת את המיקום בפורמט הנכון!</span>`;
     }
 }
 
@@ -55,6 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const site = document.getElementById("site").value;
 
         const result = parseLocation(locationStr, site);
-        document.getElementById("result").innerHTML = result;
+        document.getElementById("result").innerHTML = result; // שימוש ב-innerHTML במקום innerText
     });
 });
