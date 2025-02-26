@@ -33,8 +33,8 @@
             background-color: #2C3E50;
             color: white;
             outline: none;
-            direction: ltr;
-            text-align: left;
+            direction: rtl; /* מיישר את הטקסטים לימין */
+            text-align: right;
         }
         button {
             background-color: #FFC107;
@@ -62,7 +62,7 @@
     <h2>חישוב מיקום טוט</h2>
 
     <label for="location">הכנס מספר מיקום:</label>
-    <input type="text" id="location" placeholder="לדוגמה: 7:(-1,29,0):0" dir="ltr" autofocus oninput="fixInputOrder()">
+    <input type="text" id="location" value="7:(-1,29,0):0" dir="ltr" autofocus onfocus="fixPlaceholder()" oninput="fixInputOrder()">
 
     <label for="site">בחר אתר:</label>
     <select id="site">
@@ -95,6 +95,13 @@
                 return lastColumnMap[aisle] || 98;
             }
             return null;
+        }
+
+        function fixPlaceholder() {
+            let inputField = document.getElementById("location");
+            if (inputField.value.includes("לדוגמה")) {
+                inputField.value = "7:(-1,29,0):0"; // סידור הטקסט לברירת מחדל נכונה
+            }
         }
 
         function fixInputOrder() {
