@@ -33,9 +33,9 @@
             background-color: #2C3E50;
             color: white;
             outline: none;
-            direction: ltr; /* תיקון לתצוגה נכונה */
-            text-align: left;
-            unicode-bidi: plaintext; /* מבטיח שהתווים יוצגו בסדר הנכון */
+            direction: rtl;
+            text-align: right;
+            unicode-bidi: plaintext;
         }
         button {
             background-color: #FFC107;
@@ -76,73 +76,57 @@
 
     <div id="result"></div>
 
-    <!-- תיבת טקסט "טוט בשאלה" -->
     <label for="questionTote">טוט בשאלה:</label>
     <textarea id="questionTote" rows="2" placeholder="הכנס כאן את הטוט בשאלה"></textarea>
 
-    <!-- תיבת טקסט "טוט קיים" -->
     <label for="existingTote">טוט קיים:</label>
     <textarea id="existingTote" rows="2" placeholder="הכנס כאן את הטוט הקיים"></textarea>
 
     <script>
         function getLastColumn(aisle, site) {
-            if (site === "עמק") {
-                const lastColumnMap = {1: 91, 2: 91, 7: 71};
-                return lastColumnMap[aisle] || 74;
-            } else if (site === "חולון") {
-                return 64;
-            } else if (site === "באר שבע") {
-                const lastColumnMap = {1: 99, 2: 99};
-                return lastColumnMap[aisle] || 98;
-            }
+            if (site === "עמק") return {1: 91, 2: 91, 7: 71}[aisle] || 74;
+            if (site === "חולון") return 64;
+            if (site === "באר שבע") return {1: 99, 2: 99}[aisle] || 98;
             return null;
         }
 
         function fixPlaceholder() {
-            let inputField = document.getElementById("location");
-            if (inputField.value.includes("לדוגמה")) {
-                inputField.value = "7:(-1,29,0):0"; // סידור הטקסט לברירת מחדל נכונה
-            }
+            let input = document.getElementById("location");
+            if (input.value.includes("לדוגמה")) input.value = "7:(-1,29,0):0";
         }
 
         function fixInputOrder() {
-            let inputField = document.getElementById("location");
-            let value = inputField.value;
-
-            let regex = /^(\d+):\((-?\d+),(\d+),(\d+)\):(\d+)$/;
-            let reversedRegex = /^(\d+)\):\((-?\d+),(\d+),(\d+)\(:(\d+)$/;
+            let input = document.getElementById("location");
+            let value = input.value;
+            let regex = /^(\d+):(-?\d+),(\d+),(\d+):(\d+)$/;
+            let reversedRegex = /^(\d+):(-?\d+),(\d+),(\d+):(\d+)$/;
 
             if (reversedRegex.test(value)) {
                 let match = value.match(reversedRegex);
-                if (match) {
-                    let correctedValue = `${match[5]}:(${match[2]},${match[3]},${match[4]}):${match[1]}`;
-                    inputField.value = correctedValue;
-                }
+                if (match) input.value = `${match[5]}:(${match[2]},${match[3]},${match[4]}):${match[1]}`;
             }
         }
 
         function parseLocation(locationStr, site) {
             try {
-                const parts = locationStr.split(":");
-                const aisle = parseInt(parts[0]);
-                const details = parts[1].replace("(", "").replace(")", "").split(",");
-                const side = parseInt(details[0]);
-                const column = parseInt(details[1]);
-                const floor = parseInt(details[2]);
-                const cell = parseInt(parts[2]);
+                let parts = locationStr.split(":");
+                let aisle = parseInt(parts[0]);
+                let details = parts[1].replace(/[()]/g, "").split(",");
+                let side = parseInt(details[0]);
+                let column = parseInt(details[1]);
+                let floor = parseInt(details[2]);
+                let cell = parseInt(parts[2]);
 
-                const sideDescFront = side === -1 ? "שמאל" : "ימין";
-                const sideDescBack = side === -1 ? "ימין" : "שמאל";
-                const lastColumn = getLastColumn(aisle, site);
+                let sideDescFront = side === -1 ? "שמאל" : "ימין";
+                let sideDescBack = side === -1 ? "ימין" : "שמאל";
+                let lastColumn = getLastColumn(aisle, site);
 
-                if (lastColumn === null) {
-                    return `<span style="color: red; font-weight: bold;">🔴 שגיאה: האתר לא מוכר!</span>`;
-                }
+                if (!lastColumn) return `<span style="color: red; font-weight: bold;">🔴 שגיאה: האתר לא מוכר!</span>`;
 
-                const columnsFromBack = lastColumn - column;
+                let columnsFromBack = lastColumn - column;
 
                 return `
-                <div style="background-color: #2C3E50; padding: 10px; border-radius: 8px; text-align: right; direction: rtl; font-weight: bold; color: white;">
+                <div style="background-color: #2C3E50; padding: 10px; border-radius: 8px; text-align: right; font-weight: bold; color: white;">
                     <p>🔴 <strong>מעבר:</strong> ${aisle}</p>
                     <p>🔴 <strong>צד:</strong> ${sideDescFront} (כאשר מסתכלים מקדמת המעבר)</p>
                     <p>🔴 <strong>עמודה:</strong> ${column}</p>
@@ -154,20 +138,17 @@
                     <p>🔴 אם אתה נכנס מהחלק האחורי, עליך לספור ${columnsFromBack} עמודות קדימה, והטוט יהיה בצד ${sideDescBack}.</p>
                     <hr style="border: 1px solid #FFC107;">
                     <p style="color: red; font-weight: bold;">🔴 תזכורת: באתר, סופרים מ-0.</p>
-                </div>
-                `;
+                </div>`;
             } catch (error) {
                 return `<span style="color: red; font-weight: bold;">🔴 שגיאה: ודא שהזנת את המיקום בפורמט הנכון!</span>`;
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("calculate").addEventListener("click", function () {
-                const locationStr = document.getElementById("location").value;
-                const site = document.getElementById("site").value;
-
-                const result = parseLocation(locationStr, site);
-                document.getElementById("result").innerHTML = result;
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("calculate").addEventListener("click", () => {
+                let locationStr = document.getElementById("location").value;
+                let site = document.getElementById("site").value;
+                document.getElementById("result").innerHTML = parseLocation(locationStr, site);
             });
         });
     </script>
